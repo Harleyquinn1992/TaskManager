@@ -7,11 +7,11 @@ const router = express.Router();
 router.get('/', async(req, res) => {
     try 
     {
-        const rasks = (await Task.find()).toSorted({createAt: -1});
+        const tasks = (await Task.find()).sort({createdAt: -1});
         res.status(200).json(tasks);
     } catch (error) 
     {
-        res.status(500).json({ messae:'Failed to fetch tasks'});
+        res.status(500).json({ message:'Failed to fetch tasks'});
     }        
 });
 
@@ -40,11 +40,11 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try
     {
-        const {title, completed} = req.body;
+        const {title, complete} = req.body;
 
         const updatedTask = await Task.findByIdAndUpdate (
             req.params.id,
-            {title, completed},
+            {title, complete},
             {new: true, runValidators: true}
         );
 
@@ -67,7 +67,7 @@ router.delete('/:id', async (req, res) => {
 
         if(!deleteTask)
         {
-            return res.status(400).json({message: ' Task not found'});
+            return res.status(404).json({message: ' Task not found'});
         }
 
         res.status(200).json({message: 'Task deleted successfully'});
