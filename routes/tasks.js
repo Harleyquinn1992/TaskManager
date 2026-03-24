@@ -7,10 +7,11 @@ const router = express.Router();
 router.get('/', async(req, res) => {
     try 
     {
-        const tasks = (await Task.find()).sort({createdAt: -1});
+        const tasks = await Task.find().sort({createdAt: -1});
         res.status(200).json(tasks);
     } catch (error) 
     {
+        // console.error('GET /tasks error:', error);
         res.status(500).json({ message:'Failed to fetch tasks'});
     }        
 });
@@ -41,10 +42,16 @@ router.put('/:id', async (req, res) => {
     try
     {
         const {title, complete} = req.body;
+        const updateData = {};
+        if (title !== undefined)
+            updateData.title = title;
+        
+        if (complete !== undefined)
+            updateData.complete = complete;
 
         const updatedTask = await Task.findByIdAndUpdate (
             req.params.id,
-            {title, complete},
+            updateData,
             {new: true, runValidators: true}
         );
 
@@ -55,6 +62,7 @@ router.put('/:id', async (req, res) => {
         res.status(200).json(updatedTask);
     } catch
     {
+        console.error('PUT /tasks/:id error:', error);
         res.status(500).json({message: 'Failed to update task'});
     }
 });
